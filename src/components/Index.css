@@ -6,3 +6,14 @@
     align-items: center;
     justify-content: center;
 }
+body {
+    padding: 0px;
+    margin: 0px;
+}
+.main-container {
+    max-width: 95%;
+    padding: 0px;
+}
+/* * {
+    border: 1px red solid;
+} */

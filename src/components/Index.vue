@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="main-container">
     <grid-layout
       :layout.sync="layout"
       :col-num="layoutConfig.cols"
@@ -22,10 +22,10 @@
         :i="item.i"
         :key="item.i"
       >
-        <template v-if="item.isVideoAttached">
+        <template v-if="item.video.status === 'playing'">
           <player :type="item.video.type" :url="item.video.url" :title="item.video.title"/>
         </template>
-        <template v-else>
+        <template v-else-if="item.video.status === 'empty'">
           <div class="add-video">
             <v-dialog v-model="showAddVideoDialog" max-width="600px">
               <template v-slot:activator="{ on }">
@@ -60,7 +60,6 @@
     </v-snackbar>
   </v-container>
 </template>
-
 <script>
 import "./Index.css";
 import VueGridLayout from "vue-grid-layout";
@@ -70,7 +69,8 @@ import VideoParser from "../services/VideoParser";
 const videoItemTemplate = {
   type: "raw",
   url: "",
-  title: ""
+  title: "",
+  status: "empty"
 };
 
 export default {
@@ -93,7 +93,6 @@ export default {
           w: 1,
           h: 1,
           i: "1",
-          isVideoAttached: false,
           video: {
             ...videoItemTemplate
           }
@@ -104,7 +103,6 @@ export default {
           w: 1,
           h: 1,
           i: "2",
-          isVideoAttached: false,
           video: {
             ...videoItemTemplate
           }
@@ -115,7 +113,6 @@ export default {
           w: 1,
           h: 1,
           i: "3",
-          isVideoAttached: false,
           video: {
             ...videoItemTemplate
           }
@@ -126,7 +123,6 @@ export default {
           w: 1,
           h: 1,
           i: "4",
-          isVideoAttached: false,
           video: {
             ...videoItemTemplate
           }
@@ -139,7 +135,18 @@ export default {
       }
     };
   },
+  mounted() {
+    window.addEventListener("resize", this.resizeGrid);
+    this.resizeGrid();
+  },
   methods: {
+    resizeGrid() {
+      const viewportHeight = Math.max(
+        document.documentElement.clientHeight,
+        window.innerHeight || 0
+      );
+      this.layoutConfig.rowHeight = (viewportHeight - (this.layoutConfig.rows + 1) * 10 - 10) / this.layoutConfig.rows;
+    },
     async addVideo() {
       const url = this.form.newVideoUrl;
       if (!url) {
@@ -164,7 +171,6 @@ export default {
     setVideoUrl(type, url, title) {
       for (const grid of this.layout) {
         if (grid.i === this.form.index) {
-          grid.isVideoAttached = true;
           grid.video.type = type;
           grid.video.url = url;
           grid.video.title = title;
