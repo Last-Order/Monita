@@ -17,3 +17,23 @@ body {
 /* * {
     border: 1px red solid;
 } */
+.grid-actions-container {
+    left: 100%;
+    padding-top: 24px;
+    opacity: 0;
+    width: 16px;
+    height: 90%;
+    position: absolute;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: column;
+    transition: all;
+    transition-duration: .5s;
+}
+.grid-actions-container:hover {
+    opacity: 0.8;
+}
+.grid-actions-container i {
+    cursor: pointer;
+}

@@ -3,7 +3,7 @@
     <div class="video-info">
       <span>{{ title }} / 音量：{{ this.volume }}%</span>
     </div>
-    <div>
+    <div class="video-container">
       <video :volume="volume" ref="player"></video>
     </div>
   </div>

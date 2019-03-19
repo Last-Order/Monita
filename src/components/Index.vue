@@ -21,7 +21,17 @@
         :h="item.h"
         :i="item.i"
         :key="item.i"
+        @mouseenter.native="item.gridActionPanelOpacity = 0.7"
+        @mouseleave.native="item.gridActionPanelOpacity = 0"
       >
+        <div 
+          class="grid-actions-container" 
+          :style="{ opacity: item.gridActionPanelOpacity }"
+        >
+          <!-- Grid Actions Overlay -->
+          <v-icon small @click="closeVideo(item)">close</v-icon>
+          <v-icon small>refresh</v-icon>
+        </div>
         <template v-if="item.video.status === 'playing'">
           <player :type="item.video.type" :url="item.video.url" :title="item.video.title"/>
         </template>
@@ -29,7 +39,13 @@
           <div class="add-video">
             <v-dialog v-model="showAddVideoDialog" max-width="600px">
               <template v-slot:activator="{ on }">
-                <v-btn color="info" v-on="on" @click="form.index = item.i">+</v-btn>
+                <v-btn
+                  flat
+                  color="info"
+                  v-on="on"
+                  @click="form.index = item.i"
+                  style="z-index: 27"
+                >+</v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -93,6 +109,7 @@ export default {
           w: 1,
           h: 1,
           i: "1",
+          gridActionPanelOpacity: 0,
           video: {
             ...videoItemTemplate
           }
@@ -103,6 +120,7 @@ export default {
           w: 1,
           h: 1,
           i: "2",
+          gridActionPanelOpacity: 0,
           video: {
             ...videoItemTemplate
           }
@@ -113,6 +131,7 @@ export default {
           w: 1,
           h: 1,
           i: "3",
+          gridActionPanelOpacity: 0,
           video: {
             ...videoItemTemplate
           }
@@ -123,6 +142,7 @@ export default {
           w: 1,
           h: 1,
           i: "4",
+          gridActionPanelOpacity: 0,
           video: {
             ...videoItemTemplate
           }
@@ -145,7 +165,9 @@ export default {
         document.documentElement.clientHeight,
         window.innerHeight || 0
       );
-      this.layoutConfig.rowHeight = (viewportHeight - (this.layoutConfig.rows + 1) * 10 - 10) / this.layoutConfig.rows;
+      this.layoutConfig.rowHeight =
+        (viewportHeight - (this.layoutConfig.rows + 1) * 10 - 10) /
+        this.layoutConfig.rows;
     },
     async addVideo() {
       const url = this.form.newVideoUrl;
@@ -155,12 +177,12 @@ export default {
       }
       if (url.endsWith(".m3u8")) {
         // Raw M3U8 URL, play directly.
-        this.setVideoUrl("hls", url, "");
+        this.setVideoUrl("hls", url, "", "playing");
       }
       this.form.loading = true;
       try {
         const result = await VideoParser.parse(url);
-        this.setVideoUrl(result.type, result.url, result.title);
+        this.setVideoUrl(result.type, result.url, result.title, result.status);
         this.showAddVideoDialog = false;
         this.form.newVideoUrl = "";
       } catch (e) {
@@ -168,13 +190,19 @@ export default {
       }
       this.form.loading = false;
     },
-    setVideoUrl(type, url, title) {
+    setVideoUrl(type, url, title, status) {
       for (const grid of this.layout) {
         if (grid.i === this.form.index) {
+          grid.video.status = status;
           grid.video.type = type;
           grid.video.url = url;
           grid.video.title = title;
         }
+      }
+    },
+    closeVideo(item) {
+      item.video = {
+        ...videoItemTemplate
       }
     },
     showErrorMessage(message) {
