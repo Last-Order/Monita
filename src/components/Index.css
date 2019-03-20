@@ -9,6 +9,18 @@
 body {
     padding: 0px;
     margin: 0px;
+    overflow: hidden;
+}
+::-webkit-scrollbar { 
+    width: 0 !important 
+}
+.control-panel-container {
+    right: 5px;
+    top: 5px;
+    position: absolute;
+}
+.control-panel-container i {
+    cursor: pointer;
 }
 .main-container {
     max-width: 95%;
@@ -19,7 +31,7 @@ body {
 } */
 .grid-actions-container {
     left: 100%;
-    padding-top: 24px;
+    top: 24px;
     opacity: 0;
     width: 16px;
     height: 90%;

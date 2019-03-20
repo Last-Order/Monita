@@ -1,5 +1,38 @@
 <template>
   <v-container class="main-container">
+    <div class="control-panel-container">
+      <v-icon small @click="showSettingPanelDialog = true">settings</v-icon>
+    </div>
+    <v-dialog v-model="showSettingPanelDialog">
+      <v-card>
+        <v-card-title>
+          <span class="headline">设置</span>
+        </v-card-title>
+        <v-card-text>
+          <setting-panel></setting-panel>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="showAddVideoDialog" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">添加视频</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>
+              <v-flex>
+                <v-text-field v-model="form.newVideoUrl" label="输入视频地址" required></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" flat @click="addVideo" :loading="form.loading">添加</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <grid-layout
       :layout.sync="layout"
       :col-num="layoutConfig.cols"
@@ -24,10 +57,7 @@
         @mouseenter.native="item.gridActionPanelOpacity = 0.7"
         @mouseleave.native="item.gridActionPanelOpacity = 0"
       >
-        <div 
-          class="grid-actions-container" 
-          :style="{ opacity: item.gridActionPanelOpacity }"
-        >
+        <div class="grid-actions-container" :style="{ opacity: item.gridActionPanelOpacity }">
           <!-- Grid Actions Overlay -->
           <v-icon small @click="closeVideo(item)">close</v-icon>
           <v-icon small>refresh</v-icon>
@@ -37,35 +67,7 @@
         </template>
         <template v-else-if="item.video.status === 'empty'">
           <div class="add-video">
-            <v-dialog v-model="showAddVideoDialog" max-width="600px">
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  flat
-                  color="info"
-                  v-on="on"
-                  @click="form.index = item.i"
-                  style="z-index: 27"
-                >+</v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">添加视频</span>
-                </v-card-title>
-                <v-card-text>
-                  <v-container grid-list-md>
-                    <v-layout wrap>
-                      <v-flex>
-                        <v-text-field v-model="form.newVideoUrl" label="输入视频地址" required></v-text-field>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click="addVideo" :loading="form.loading">添加</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            <v-btn flat color="info" @click="form.index = item.i, showAddVideoDialog = true" style="z-index: 27">+</v-btn>
           </div>
         </template>
       </grid-item>
@@ -79,8 +81,11 @@
 <script>
 import "./Index.css";
 import VueGridLayout from "vue-grid-layout";
-import Player from "./Player/Player";
 import VideoParser from "../services/VideoParser";
+import Storage from "../services/Storage";
+import Player from "./Player/Player";
+import SettingPanel from "./Settings/Index";
+import { mapState, Store } from "vuex";
 
 const videoItemTemplate = {
   type: "raw",
@@ -97,6 +102,8 @@ export default {
         message: ""
       },
       showAddVideoDialog: false,
+      showSettingPanelDialog: false,
+      settingPanelTab: 0,
       form: {
         index: "",
         newVideoUrl: "",
@@ -149,17 +156,57 @@ export default {
         }
       ],
       layoutConfig: {
-        cols: 2,
-        rows: 2,
+        cols: this.$store.state.settings.layout.cols,
+        rows: this.$store.state.settings.layout.rows,
         rowHeight: 300
       }
     };
   },
+  computed: {
+    ...mapState({
+      rows: state => state.settings.layout.rows,
+      cols: state => state.settings.layout.cols
+    })
+  },
+  watch: {
+    rows() {
+      this.layoutConfig.rows = this.rows;
+      this.resetGrid();
+    },
+    cols() {
+      this.layoutConfig.cols = this.cols;
+      this.resetGrid();
+    },
+    layout() {
+      Storage.setSetting("layout", JSON.stringify(this.layout));
+    }
+  },
   mounted() {
     window.addEventListener("resize", this.resizeGrid);
+    if (Storage.getSetting("layout")) {
+      this.layout = JSON.parse(Storage.getSetting("layout"));
+    }
     this.resizeGrid();
   },
   methods: {
+    resetGrid() {
+      const newLayout = [];
+      for (let i = 0; i < this.rows; i++) {
+        for (let j = 0; j < this.cols; j++) {
+          newLayout.push({
+            x: i,
+            y: j,
+            w: 1,
+            h: 1,
+            i: i.toString() + "-" + j.toString(),
+            video: {
+              ...videoItemTemplate
+            }
+          });
+        }
+      }
+      this.layout = newLayout;
+    },
     resizeGrid() {
       const viewportHeight = Math.max(
         document.documentElement.clientHeight,
@@ -203,7 +250,7 @@ export default {
     closeVideo(item) {
       item.video = {
         ...videoItemTemplate
-      }
+      };
     },
     showErrorMessage(message) {
       this.error.show = true;
@@ -213,7 +260,8 @@ export default {
   components: {
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
-    Player
+    Player,
+    SettingPanel
   }
 };
 </script>
