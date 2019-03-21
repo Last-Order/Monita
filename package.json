@@ -11,7 +11,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service electron:serve",
-    "electron:build": "vue-cli-service electron:build --win",
+    "electron:build-win": "vue-cli-service electron:build --win",
     "electron:build-linux": "vue-cli-service electron:build --linux",
     "electron:build-macos": "vue-cli-service electron:build --mac",
     "electron:serve": "vue-cli-service electron:serve",
