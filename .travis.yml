@@ -38,12 +38,7 @@ branches:
     - "/^v\\d+\\.\\d+\\.\\d+$/"
 before_deploy:
   - mkdir ./dist_binary
-  - bash -c "[ -f ./dist_electron/*.dmg ] && mv ./dist_electron/*.dmg ./dist_binary/"
-  - bash -c "[ -f ./dist_electron/*.msi ] && mv ./dist_electron/*.msi ./dist_binary/"
-  - bash -c "[ -f ./dist_electron/*.zip ] && mv ./dist_electron/*.zip ./dist_binary/"
-  - bash -c "[ -f ./dist_electron/*.rpm ] && mv ./dist_electron/*.rpm ./dist_binary/"
-  - bash -c "[ -f ./dist_electron/*.appImage ] && mv ./dist_electron/*.appImage ./dist_binary/"
-  - bash -c "[ -f ./dist_electron/*.deb ] && mv ./dist_electron/*.deb ./dist_binary/"
+  - node ./build/scripts/beforeDeploy.js
 deploy:
   provider: releases
   api_key: 
