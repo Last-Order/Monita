@@ -1,16 +1,24 @@
 {
   "name": "monita",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "author": {
+    "name": "Eridanus Sora",
+    "email": "sora@sound.moe"
+  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service electron:serve",
-    "electron:build": "vue-cli-service electron:build",
+    "electron:build": "vue-cli-service electron:build --win",
+    "electron:build-linux": "vue-cli-service electron:build --linux",
+    "electron:build-macos": "vue-cli-service electron:build --mac",
     "electron:serve": "vue-cli-service electron:serve",
+    "electron:generate-icons": "electron-icon-builder --input=./public/logo.png --output=build --flatten",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "postuninstall": "electron-builder install-app-deps",
+    "release": "vue-cli-service electron:build"
   },
   "main": "background.js",
   "dependencies": {
@@ -29,6 +37,7 @@
     "babel-eslint": "^10.0.1",
     "css-loader": "^2.1.1",
     "electron": "^4.0.0",
+    "electron-icon-builder": "^1.0.0",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
     "material-design-icons-iconfont": "^4.0.5",

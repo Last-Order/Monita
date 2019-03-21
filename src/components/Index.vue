@@ -158,6 +158,8 @@ export default {
     window.addEventListener("resize", this.resizeGrid);
     if (Storage.getSetting("layout")) {
       this.layout = JSON.parse(Storage.getSetting("layout"));
+    } else {
+      this.resetGrid();
     }
     this.resizeGrid();
   },
@@ -167,8 +169,8 @@ export default {
       for (let i = 0; i < this.rows; i++) {
         for (let j = 0; j < this.cols; j++) {
           newLayout.push({
-            x: i,
-            y: j,
+            x: j,
+            y: i,
             w: 1,
             h: 1,
             i: i.toString() + "-" + j.toString(),
@@ -180,6 +182,7 @@ export default {
         }
       }
       this.layout = newLayout;
+      this.resizeGrid()
     },
     resizeGrid() {
       const viewportHeight = Math.max(
