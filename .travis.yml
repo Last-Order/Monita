@@ -38,7 +38,7 @@ branches:
     - "/^v\\d+\\.\\d+\\.\\d+$/"
 before_deploy:
   - mkdir ./dist_binary
-  - mv ./dist_electron/*.dmg ./dist_electron/*.msi ./dist_electron/*.zip ./dist_electron/*.rpm ./dist_electron/*.appImage ./dist_electron/*.deb ./dist_binary
+  - mv ./dist_electron/*.dmg ./dist_electron/*.msi ./dist_electron/*.zip ./dist_electron/*.rpm ./dist_electron/*.appImage ./dist_electron/*.deb ./dist_binary 2>/dev/null
 deploy:
   provider: releases
   api_key: 
