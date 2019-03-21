@@ -60,7 +60,7 @@
         <div class="grid-actions-container" :style="{ opacity: item.gridActionPanelOpacity }">
           <!-- Grid Actions Overlay -->
           <v-icon small @click="closeVideo(item)">close</v-icon>
-          <v-icon small>refresh</v-icon>
+          <v-icon small @click="refreshVideo(item)">refresh</v-icon>
         </div>
         <template v-if="item.video.status === 'playing'">
           <player :type="item.video.type" :url="item.video.url" :title="item.video.title"/>
@@ -76,6 +76,10 @@
       {{ error.message }}
       <v-btn dark flat @click="error.show = false">×</v-btn>
     </v-snackbar>
+    <v-snackbar v-model="notice.show" :top="true">
+      {{ notice.message }}
+      <v-btn dark flat @click="notice.show = false">×</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 <script>
@@ -89,15 +93,24 @@ import { mapState, Store } from "vuex";
 
 const videoItemTemplate = {
   type: "raw",
+  pageUrl: "",
   url: "",
   title: "",
   status: "empty"
 };
 
+const gridItemTemplate = {
+  gridActionPanelOpacity: 0
+}
+
 export default {
   data() {
     return {
       error: {
+        show: false,
+        message: ""
+      },
+      notice: {
         show: false,
         message: ""
       },
@@ -110,50 +123,7 @@ export default {
         loading: false
       },
       layout: [
-        {
-          x: 0,
-          y: 0,
-          w: 1,
-          h: 1,
-          i: "1",
-          gridActionPanelOpacity: 0,
-          video: {
-            ...videoItemTemplate
-          }
-        },
-        {
-          x: 0,
-          y: 1,
-          w: 1,
-          h: 1,
-          i: "2",
-          gridActionPanelOpacity: 0,
-          video: {
-            ...videoItemTemplate
-          }
-        },
-        {
-          x: 1,
-          y: 0,
-          w: 1,
-          h: 1,
-          i: "3",
-          gridActionPanelOpacity: 0,
-          video: {
-            ...videoItemTemplate
-          }
-        },
-        {
-          x: 1,
-          y: 1,
-          w: 1,
-          h: 1,
-          i: "4",
-          gridActionPanelOpacity: 0,
-          video: {
-            ...videoItemTemplate
-          }
-        }
+        
       ],
       layoutConfig: {
         cols: this.$store.state.settings.layout.cols,
@@ -177,8 +147,11 @@ export default {
       this.layoutConfig.cols = this.cols;
       this.resetGrid();
     },
-    layout() {
-      Storage.setSetting("layout", JSON.stringify(this.layout));
+    layout: {
+      handler: (layout) => {
+        Storage.setSetting("layout", JSON.stringify(layout));
+      },
+      deep: true
     }
   },
   mounted() {
@@ -199,6 +172,7 @@ export default {
             w: 1,
             h: 1,
             i: i.toString() + "-" + j.toString(),
+            ...gridItemTemplate,
             video: {
               ...videoItemTemplate
             }
@@ -224,12 +198,12 @@ export default {
       }
       if (url.endsWith(".m3u8")) {
         // Raw M3U8 URL, play directly.
-        this.setVideoUrl("hls", url, "", "playing");
+        this.setVideoUrl(this.form.index, "hls", url, "", "playing", "");
       }
       this.form.loading = true;
       try {
         const result = await VideoParser.parse(url);
-        this.setVideoUrl(result.type, result.url, result.title, result.status);
+        this.setVideoUrl(this.form.index, result.type, result.url, result.title, result.status, url);
         this.showAddVideoDialog = false;
         this.form.newVideoUrl = "";
       } catch (e) {
@@ -237,13 +211,14 @@ export default {
       }
       this.form.loading = false;
     },
-    setVideoUrl(type, url, title, status) {
+    setVideoUrl(index, type, url, title, status, pageUrl) {
       for (const grid of this.layout) {
-        if (grid.i === this.form.index) {
+        if (grid.i === index) {
           grid.video.status = status;
           grid.video.type = type;
           grid.video.url = url;
           grid.video.title = title;
+          grid.video.pageUrl = pageUrl;
         }
       }
     },
@@ -252,9 +227,29 @@ export default {
         ...videoItemTemplate
       };
     },
+    async refreshVideo(item) {
+      if (!item.video.pageUrl) {
+        return;
+      }
+      this.showNotice("正在刷新");
+      try {
+        const result = await VideoParser.parse(item.video.pageUrl);
+        this.setVideoUrl(item.i, result.type, result.url, result.title, result.status, item.video.pageUrl);
+      } catch (e) {
+        this.showErrorMessage(e);
+      }
+      this.hideNotice();
+    },
     showErrorMessage(message) {
       this.error.show = true;
       this.error.message = message;
+    },
+    showNotice(message) {
+      this.notice.show = true;
+      this.notice.message = message;
+    },
+    hideNotice(message) {
+      this.notice.show = false;
     }
   },
   components: {

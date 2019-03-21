@@ -18,12 +18,21 @@
     z-index: 7;
     transition: all;
     transition-duration: .5s;
+    display: flex;
 }
 .video-info span {
     padding: 5px;
-    width: 100%;
-    display: inline-block;
+    max-height: 25px;
     background-color: black;
+}
+.video-info-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+.video-info-volume {
+    min-width: 100px;
 }
 .video-info:hover {
     opacity: 0.7

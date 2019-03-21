@@ -1,7 +1,8 @@
 <template>
   <div class="player-container" @wheel="handleWheel">
     <div class="video-info">
-      <span>{{ title }} / 音量：{{ this.volume }}%</span>
+      <span class="video-info-title">{{ title }} </span> 
+      <span class="video-info-volume">音量：{{ this.volume }}%</span>
     </div>
     <div class="video-container">
       <video :volume="volume" ref="player"></video>

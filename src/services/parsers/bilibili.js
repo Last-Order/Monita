@@ -15,12 +15,22 @@ export default async function parse(url) {
             const roomInfo = JSON.parse(
                 doc.getElementsByClassName('script-requirement')[0].children[0].innerHTML.match(/window.__NEPTUNE_IS_MY_WAIFU__=(.+)/)[1]
             );
-            resolve({
-                status: roomInfo.roomInitRes.data.live_status === 1 ? 'playing' : 'wait',
-                type: 'flv',
-                url: roomInfo.playUrlRes.data.durl[0].url,
-                title: roomInfo.baseInfoRes.data.title
-            });
+            if (roomInfo.roomInitRes.data.live_status === 1) {
+                resolve({
+                    status: 'playing',
+                    type: 'flv',
+                    url: roomInfo.playUrlRes.data.durl[0].url,
+                    title: roomInfo.baseInfoRes.data.title
+                });
+            } else {
+                resolve({
+                    status: 'wait',
+                    type: 'flv',
+                    url: '',
+                    title: roomInfo.baseInfoRes.data.title
+                });
+            }
+            
         } catch (e) {
             reject(e);
         }
