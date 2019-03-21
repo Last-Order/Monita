@@ -36,3 +36,16 @@ before_cache:
 branches:
   except:
     - "/^v\\d+\\.\\d+\\.\\d+$/"
+before_deploy:
+  - mkdir ./dist_binary
+  - mv ./dist_electron/*.dmg ./dist_electron/*.msi ./dist_electron/*.zip ./dist_electron/*.rpm ./dist_electron/*.appImage ./dist_electron/*.deb ./dist_binary
+deploy:
+  provider: releases
+  api_key: 
+    secure: "rqVp445AStWhmLkFDcasMHvyhlEJdfFhBQpvT0jUrs4Q/jkMNHy61f0jZgE/Egj10BIwwQXqDD/LbxiVz2UiSDgBKHUL8r7QkoZNNVuUBQrUg9K/g2/4vQ0+nXyfw8AIduhDt4Z8Tnlzq/mMlyUsyQEP5AYYMJnj9C2qvB7C6XE4Abg3iTXPcrZA7OWSjLbfOdwbhBDta4RyJ527G4ZCon1qIv0WY9R13L1DTfMpQxKbZpoDjP1NfUsIE992RTKilOvg05ZjgBH3/77KxV3G1NQvARvHDuRDb9Z5X1jJo5Fg9FjOy1gpDMqjO55cTqt/Lf6gS36Ngcpxp3Yz0B2VlBTFge1gskdUQWKQAKDm6q4+JbICeq6UlsZkjGWrZxOjq8/I7tfuYlfM5EQU3l7dSIRPON0p/pzciDl1WeyYYcchhhaL1jfOWunbNTYozui5IpPJKx/JiQ2RJShBpKE6UIBWx8CMEkFGuBsV+44c14H8nNdS+yWCJLsB/7i8vuox2hUGayggEavARQ39vnkXbt9vDWps9jB3ayjAOSZDsPeIzXDs0laEXDCDf4P8NAS6i1KQyZpI16gXObigFXEYaiDOXBZo2PMQjQZL8pIwLFB5q2EllnzEdFwqX950YPpsBQHc2nbuROdgyx0AO5F3gjIcIuBQD2R3EsVVLp+2vEQ="
+  file_glob: true
+  file: dist_binary/*
+  skip_cleanup: true
+  on:
+    tags: true
+  draft: true
