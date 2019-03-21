@@ -1,5 +1,5 @@
 <template>
-  <v-container class="main-container">
+  <v-container class="main-container" ref="mainContainer">
     <div class="control-panel-container">
       <v-icon small @click="showSettingPanelDialog = true">settings</v-icon>
     </div>
@@ -67,7 +67,12 @@
         </template>
         <template v-else-if="item.video.status === 'empty'">
           <div class="add-video">
-            <v-btn flat color="info" @click="form.index = item.i, showAddVideoDialog = true" style="z-index: 27">+</v-btn>
+            <v-btn
+              flat
+              color="info"
+              @click="form.index = item.i, showAddVideoDialog = true"
+              style="z-index: 27"
+            >+</v-btn>
           </div>
         </template>
       </grid-item>
@@ -89,7 +94,7 @@ import VideoParser from "../services/VideoParser";
 import Storage from "../services/Storage";
 import Player from "./Player/Player";
 import SettingPanel from "./Settings/Index";
-import { mapState, Store } from "vuex";
+import { mapState } from "vuex";
 
 const videoItemTemplate = {
   type: "raw",
@@ -101,7 +106,7 @@ const videoItemTemplate = {
 
 const gridItemTemplate = {
   gridActionPanelOpacity: 0
-}
+};
 
 export default {
   data() {
@@ -122,9 +127,7 @@ export default {
         newVideoUrl: "",
         loading: false
       },
-      layout: [
-        
-      ],
+      layout: [],
       layoutConfig: {
         cols: this.$store.state.settings.layout.cols,
         rows: this.$store.state.settings.layout.rows,
@@ -148,7 +151,7 @@ export default {
       this.resetGrid();
     },
     layout: {
-      handler: (layout) => {
+      handler: layout => {
         Storage.setSetting("layout", JSON.stringify(layout));
       },
       deep: true
@@ -162,6 +165,36 @@ export default {
       this.resetGrid();
     }
     this.resizeGrid();
+
+    // Drop to set background
+    if (localStorage.getItem('background')) {
+      document.getElementById('app').style.backgroundImage = `url(${localStorage.getItem('background')})`
+    }
+    this.$refs.mainContainer.addEventListener("dragover", e => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    this.$refs.mainContainer.addEventListener("dragover", e => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    this.$refs.mainContainer.addEventListener("drop", e => {
+      if (e.dataTransfer) {
+        if (e.dataTransfer.files.length) {
+          e.preventDefault();
+          e.stopPropagation();
+          const fileReader = new FileReader();
+          if (e.dataTransfer.files[0].size > 1024 * 1024 * 5) {
+            return this.showErrorMessage('图片过大，不能作为背景');
+          }
+          fileReader.readAsDataURL(e.dataTransfer.files[0]);
+          fileReader.onloadend = () => {
+            localStorage.setItem('background', fileReader.result);
+            document.getElementById('app').style.backgroundImage = `url(${fileReader.result})`
+          };
+        }
+      }
+    });
   },
   methods: {
     resetGrid() {
@@ -182,7 +215,7 @@ export default {
         }
       }
       this.layout = newLayout;
-      this.resizeGrid()
+      this.resizeGrid();
     },
     resizeGrid() {
       const viewportHeight = Math.max(
@@ -206,7 +239,14 @@ export default {
       this.form.loading = true;
       try {
         const result = await VideoParser.parse(url);
-        this.setVideoUrl(this.form.index, result.type, result.url, result.title, result.status, url);
+        this.setVideoUrl(
+          this.form.index,
+          result.type,
+          result.url,
+          result.title,
+          result.status,
+          url
+        );
         this.showAddVideoDialog = false;
         this.form.newVideoUrl = "";
       } catch (e) {
@@ -237,7 +277,14 @@ export default {
       this.showNotice("正在刷新");
       try {
         const result = await VideoParser.parse(item.video.pageUrl);
-        this.setVideoUrl(item.i, result.type, result.url, result.title, result.status, item.video.pageUrl);
+        this.setVideoUrl(
+          item.i,
+          result.type,
+          result.url,
+          result.title,
+          result.status,
+          item.video.pageUrl
+        );
       } catch (e) {
         this.showErrorMessage(e);
       }
@@ -251,7 +298,7 @@ export default {
       this.notice.show = true;
       this.notice.message = message;
     },
-    hideNotice(message) {
+    hideNotice() {
       this.notice.show = false;
     }
   },

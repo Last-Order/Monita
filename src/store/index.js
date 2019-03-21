@@ -9,7 +9,8 @@ const store = new Vuex.Store({
             layout: {
                 rows: parseInt(Storage.getSetting('layout.rows', 2)),
                 cols: parseInt(Storage.getSetting('layout.cols', 2))
-            }
+            },
+            background: Storage.getSetting('background')
         }
     },
     mutations: {
@@ -30,6 +31,9 @@ const store = new Vuex.Store({
                 state.settings.layout.cols = parseInt(cols);
                 Storage.setSetting('layout.cols', parseInt(cols));
             }
+        },
+        updateBackground(state, background) {
+            state.settings.background = background;
         }
     }
 });

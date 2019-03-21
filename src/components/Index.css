@@ -11,6 +11,11 @@ body {
     margin: 0px;
     overflow: hidden;
 }
+#app {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
 ::-webkit-scrollbar { 
     width: 0 !important 
 }
