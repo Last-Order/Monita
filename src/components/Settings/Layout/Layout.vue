@@ -1,7 +1,18 @@
 <template>
   <v-container>
+    <v-dialog v-model="showImportDialog">
+      <import-layout @close="showImportDialog = false" />
+    </v-dialog>
+    <v-dialog v-model="showExportDialog">
+      <export-layout @close="showExportDialog = false" />
+    </v-dialog>
     <v-form>
       <v-container>
+        <v-toolbar flat color="white">
+          <v-spacer/>
+          <v-btn small dark class="mb-2" @click="showExportDialog = true">导出</v-btn>
+          <v-btn small dark class="mb-2" @click="showImportDialog = true">导入</v-btn>
+        </v-toolbar>
         <v-layout>
           <v-flex lg12 md12 xs12>
             <v-alert :value="true" type="error">注意：修改布局将会清空当前栅格内容</v-alert>
@@ -20,9 +31,14 @@
   </v-container>
 </template>
 <script>
+import ImportLayout from './Import';
+import ExportLayout from './Export';
 export default {
   data() {
-    return {};
+    return {
+      showImportDialog: false,
+      showExportDialog: false
+    };
   },
   computed: {
     rows: {
@@ -41,6 +57,10 @@ export default {
         this.$store.commit("updateLayoutCols", cols);
       }
     }
+  },
+  components: {
+    ExportLayout,
+    ImportLayout
   }
 };
 </script>

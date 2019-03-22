@@ -2,6 +2,7 @@
   <v-container class="main-container" ref="mainContainer">
     <div class="control-panel-container">
       <v-icon small @click="showSettingPanelDialog = true">settings</v-icon>
+      <v-icon small @click="refresh">refresh</v-icon>
     </div>
     <v-dialog v-model="showSettingPanelDialog">
       <v-card>
@@ -260,6 +261,9 @@ export default {
         this.showErrorMessage(e);
       }
       this.hideNotice();
+    },
+    refresh() {
+      location.reload();
     },
     handlePlayerError(item, e) {
       item.video.status = 'error';

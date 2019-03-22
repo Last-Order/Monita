@@ -16,7 +16,7 @@
 </template>
 <script>
 import GeneralSetting from './General';
-import LayoutSetting from './Layout';
+import LayoutSetting from './Layout/Layout';
 import FavoriteSetting from './Favorite/Favorite';
 export default {
   data() {

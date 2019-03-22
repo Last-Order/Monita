@@ -24,13 +24,7 @@ cache:
 
 script:
   - |
-    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      yarn electron:build-linux
-    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      yarn electron:build-macos
-    else
-      yarn electron:build-windows
-    fi
+    node ./build/scripts/build.js
 
 branches:
   except:

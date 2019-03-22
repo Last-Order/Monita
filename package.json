@@ -5,6 +5,11 @@
     "name": "Eridanus Sora",
     "email": "sora@sound.moe"
   },
+  "homepage": "https://github.com/Last-Order/Monita",
+  "description": "A Multi-channel Live Stream Viewer",
+  "repository": {
+    "url": "https://github.com/Last-Order/Monita"
+  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
