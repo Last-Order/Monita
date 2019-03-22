@@ -3,14 +3,19 @@
     <v-dialog v-model="showAddFavoritePanel">
       <add-favorite-form @added="handleNewFavoriteAdded"></add-favorite-form>
     </v-dialog>
+    <v-dialog v-model="showExportDialog">
+      <export-favorite @close="showExportDialog = false" />
+    </v-dialog>
+    <v-dialog v-model="showImportDialog">
+      <import-favorite @close="showImportDialog = false" />
+    </v-dialog>
     <v-toolbar flat color="white">
       <v-text-field v-model="keyword" append-icon="search" label="搜索" single-line hide-details></v-text-field>
       <v-spacer></v-spacer>
       <v-btn small color="primary" dark class="mb-2" @click="showAddFavoritePanel = true">添加</v-btn>
-      <v-btn small dark class="mb-2">导出</v-btn>
-      <v-btn small dark class="mb-2">导入</v-btn>
+      <v-btn small dark class="mb-2" @click="showExportDialog = true">导出</v-btn>
+      <v-btn small dark class="mb-2" @click="showImportDialog = true">导入</v-btn>
     </v-toolbar>
-
     <v-data-table :headers="headers" :items="favorites" rows-per-page-text="每页数量" :rows-per-page-items="[10, 20]" :search="keyword">
       <template v-slot:items="props">
         <td>{{ props.item.channelName }}</td>
@@ -24,8 +29,10 @@
   </v-container>
 </template>
 <script>
+import ImportFavorite from './Import';
+import ExportFavorite from './Export';
 import AddFavoriteForm from './AddFavoriteForm';
-import ChannelStatus from '../Common/ChannelStatus';
+import ChannelStatus from '../../Common/ChannelStatus';
 import { mapState } from 'vuex';
 export default {
   data() {
@@ -51,6 +58,8 @@ export default {
           sortable: false
         }
       ],
+      showExportDialog: false,
+      showImportDialog: false,
     };
   },
   computed: {
@@ -73,7 +82,9 @@ export default {
   },
   components: {
     AddFavoriteForm,
-    ChannelStatus
+    ChannelStatus,
+    ImportFavorite,
+    ExportFavorite
   }
 };
 </script>

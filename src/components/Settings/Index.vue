@@ -17,7 +17,7 @@
 <script>
 import GeneralSetting from './General';
 import LayoutSetting from './Layout';
-import FavoriteSetting from './Favorite';
+import FavoriteSetting from './Favorite/Favorite';
 export default {
   data() {
       return {
