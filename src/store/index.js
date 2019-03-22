@@ -17,9 +17,9 @@ const store = new Vuex.Store({
             background: Storage.getSetting('background')
         },
         favorites: JSON.parse(Storage.getSetting('favorites', `[{
-            channelName: '有栖マナOfficial',
-            pageUrl: 'https://live.bilibili.com/3822389',
-            status: 'unknown'
+            "channelName": "有栖マナOfficial",
+            "pageUrl": "https://live.bilibili.com/3822389",
+            "status": "unknown"
         }]`)),
         favoritesTimers: new Map()
     },

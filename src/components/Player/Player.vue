@@ -14,7 +14,7 @@ import HLS from "hls.js";
 import FLV from "flv.js";
 import "./Player.css";
 export default {
-  props: ["url", "type", "title"],
+  props: ["url", "type", "title", "item"],
   data() {
     return {
       volume: 100,
@@ -61,7 +61,7 @@ export default {
       }
     },
     handleError(error, errorType, errorDetail) {
-      this.$emit('error', error);
+      this.$emit('error', this.item, error, errorType, errorDetail);
     }
   },
   watch: {

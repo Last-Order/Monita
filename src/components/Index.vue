@@ -15,7 +15,7 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model="showAddVideoDialog" max-width="600px">
-      <add-video-form @added="handleVideoAdded" @error="showErrorMessage" />
+      <add-video-form @added="handleVideoAdded" @error="showErrorMessage"/>
     </v-dialog>
     <grid-layout
       :layout.sync="layout"
@@ -47,7 +47,13 @@
           <v-icon small @click="refreshVideo(item)">refresh</v-icon>
         </div>
         <template v-if="item.video.status === 'playing'">
-          <player :type="item.video.type" :url="item.video.url" :title="item.video.title" />
+          <player
+            :type="item.video.type"
+            :url="item.video.url"
+            :title="item.video.title"
+            :item="item"
+            @error="handlePlayerError"
+          />
         </template>
         <template v-else-if="item.video.status === 'wait'">
           <div class="grid-wait">
@@ -55,11 +61,11 @@
             <div>正在等待</div>
           </div>
         </template>
-        <!-- <template v-else-if="item.video.status === 'error'">
+        <template v-else-if="item.video.status === 'error'">
           <div class="grid-error">
             <span>视频播放发生错误</span>
           </div>
-        </template> -->
+        </template>
         <template v-else-if="item.video.status === 'empty'">
           <div class="add-video">
             <v-btn
@@ -89,7 +95,7 @@ import VideoParser from "../services/VideoParser";
 import Storage from "../services/Storage";
 import Player from "./Player/Player";
 import SettingPanel from "./Settings/Index";
-import AddVideoForm from './Home/AddVideoForm';
+import AddVideoForm from "./Home/AddVideoForm";
 import { mapState } from "vuex";
 
 const videoItemTemplate = {
@@ -119,7 +125,7 @@ export default {
       showAddVideoDialog: false,
       showSettingPanelDialog: false,
       settingPanelTab: 0,
-      activeGridIndex: '',
+      activeGridIndex: "",
       layout: [],
       layoutConfig: {
         cols: this.$store.state.settings.layout.cols,
@@ -160,8 +166,10 @@ export default {
     this.resizeGrid();
 
     // Drop to set background
-    if (localStorage.getItem('background')) {
-      document.getElementById('app').style.backgroundImage = `url(${localStorage.getItem('background')})`
+    if (localStorage.getItem("background")) {
+      document.getElementById(
+        "app"
+      ).style.backgroundImage = `url(${localStorage.getItem("background")})`;
     }
     this.$refs.mainContainer.addEventListener("dragover", e => {
       e.preventDefault();
@@ -178,19 +186,21 @@ export default {
           e.stopPropagation();
           const fileReader = new FileReader();
           if (e.dataTransfer.files[0].size > 1024 * 1024 * 5) {
-            return this.showErrorMessage('图片过大，不能作为背景');
+            return this.showErrorMessage("图片过大，不能作为背景");
           }
           fileReader.readAsDataURL(e.dataTransfer.files[0]);
           fileReader.onloadend = () => {
-            localStorage.setItem('background', fileReader.result);
-            document.getElementById('app').style.backgroundImage = `url(${fileReader.result})`
+            localStorage.setItem("background", fileReader.result);
+            document.getElementById("app").style.backgroundImage = `url(${
+              fileReader.result
+            })`;
           };
         }
       }
     });
 
     // Init fav watching
-    this.$store.dispatch('initFavoritesTimers');
+    this.$store.dispatch("initFavoritesTimers");
   },
   methods: {
     resetGrid() {
@@ -223,8 +233,15 @@ export default {
         this.layoutConfig.rows;
     },
     async handleVideoAdded(video) {
-        this.setVideoUrl(this.activeGridIndex, video.type, video.url, video.title, video.status, video.pageUrl);
-        this.showAddVideoDialog = false;
+      this.setVideoUrl(
+        this.activeGridIndex,
+        video.type,
+        video.url,
+        video.title,
+        video.status,
+        video.pageUrl
+      );
+      this.showAddVideoDialog = false;
     },
     setVideoUrl(index, type, url, title, status, pageUrl) {
       for (const grid of this.layout) {
@@ -266,7 +283,7 @@ export default {
       location.reload();
     },
     handlePlayerError(item, e) {
-      item.video.status = 'error';
+      item.video.status = "error";
     },
     showErrorMessage(message) {
       this.error.show = true;
