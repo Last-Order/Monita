@@ -1,6 +1,7 @@
 import Vuex from 'vuex';
 import Vue from 'vue';
 import Storage from '../services/Storage';
+import VideoParser from '../services/VideoParser';
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
@@ -10,13 +11,17 @@ const store = new Vuex.Store({
                 rows: parseInt(Storage.getSetting('layout.rows', 2)),
                 cols: parseInt(Storage.getSetting('layout.cols', 2))
             },
+            general: {
+                watchInterval: parseInt(Storage.getSetting('general.watchInterval', 30000))
+            },
             background: Storage.getSetting('background')
         },
         favorites: [{
             channelName: '有栖マナOfficial',
             pageUrl: 'https://live.bilibili.com/3822389',
             status: 'unknown'
-        }]
+        }],
+        favoritesTimers: new Map()
     },
     mutations: {
         updateLayoutRows(state, rows) {
@@ -37,6 +42,15 @@ const store = new Vuex.Store({
                 Storage.setSetting('layout.cols', parseInt(cols));
             }
         },
+        updateWatchInterval(state, interval) {
+            if (parseInt(interval) !== parseInt(interval)) {
+                state.settings.general.watchInterval = 30000;
+                Storage.setSetting('general.watchInterval', 30000);
+            } else {
+                state.settings.general.watchInterval = parseInt(interval);
+                Storage.setSetting('general.watchInterval', parseInt(interval));
+            }
+        },
         updateBackground(state, background) {
             state.settings.background = background;
         },
@@ -49,6 +63,43 @@ const store = new Vuex.Store({
         },
         addFavorite(state, item) {
             state.favorites.push(item);
+        },
+        setFavoriteStatus(state, { pageUrl, status }) {
+            for (const fav of state.favorites) {
+                if (fav.pageUrl === pageUrl) {
+                    fav.status = status;
+                }
+            }
+        },
+        addFavoriteTimer(state, pageUrl, timer) {
+            state.favoritesTimers.set(pageUrl, timer);
+        },
+        removeFavoriteTimer(state, pageUrl) {
+            clearInterval(state.favoritesTimers.get(pageUrl));
+            state.favoritesTimers.delete(pageUrl);
+        }
+    },
+    actions: {
+        initFavoritesTimers({ commit, state }) {
+            for (const fav of state.favorites) {
+                const timer = setInterval(async () => {
+                    const status = await VideoParser.getStatus(fav.pageUrl);
+                    commit('setFavoriteStatus', { pageUrl: fav.pageUrl, status });
+                }, state.settings.general.watchInterval);
+                commit('addFavoriteTimer', fav.pageUrl, timer);
+            }
+        },
+        addFavorite({ commit, state }, item) {
+            const timer = setInterval(async () => {
+                const status = await VideoParser.getStatus(item.pageUrl);
+                commit('setFavoriteStatus', { pageUrl: item.pageUrl, status });
+            }, state.settings.general.watchInterval);
+            commit('addFavorite', item);
+            commit('addFavoriteTimer', item.pageUrl, timer);
+        },
+        deleteFavorite({ commit }, item) {
+            commit('deleteFavorite', item);
+            commit('removeFavoriteTimer', item.pageUrl);
         }
     }
 });

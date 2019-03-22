@@ -11,11 +11,11 @@
       <v-btn small dark class="mb-2">导入</v-btn>
     </v-toolbar>
 
-    <v-data-table :headers="headers" :items="favorites" rows-per-page-text="每页数量" :rows-per-page-items="[10, 20]">
+    <v-data-table :headers="headers" :items="favorites" rows-per-page-text="每页数量" :rows-per-page-items="[10, 20]" :search="keyword">
       <template v-slot:items="props">
         <td>{{ props.item.channelName }}</td>
         <td>{{ props.item.pageUrl }}</td>
-        <td>{{ props.item.status }}</td>
+        <td><channel-status :status="props.item.status" /></td>
         <td>
           <v-btn flat small color="error" @click="deleteItem(props.item)">删除</v-btn>
         </td>
@@ -25,6 +25,7 @@
 </template>
 <script>
 import AddFavoriteForm from './AddFavoriteForm';
+import ChannelStatus from '../Common/ChannelStatus';
 import { mapState } from 'vuex';
 export default {
   data() {
@@ -59,10 +60,10 @@ export default {
   },
   methods: {
     deleteItem(item) {
-      this.$store.commit('deleteFavorite', item);
+      this.$store.dispatch('deleteFavorite', item);
     },
     handleNewFavoriteAdded(channelName, pageUrl) {
-      this.$store.commit('addFavorite', {
+      this.$store.dispatch('addFavorite', {
         channelName,
         pageUrl,
         status: 'unknown',
@@ -71,7 +72,8 @@ export default {
     }
   },
   components: {
-    AddFavoriteForm
+    AddFavoriteForm,
+    ChannelStatus
   }
 };
 </script>

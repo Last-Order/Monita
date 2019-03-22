@@ -22,4 +22,14 @@ export default class Parser {
             }
         })
     }
+    static getStatus(url) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const parseResult = await Parser.parse(url);
+                resolve(parseResult.status);
+            } catch (e) {
+                reject(e);
+            }
+        })
+    }
 }

@@ -207,6 +207,9 @@ export default {
         }
       }
     });
+
+    // Init fav watching
+    this.$store.dispatch('initFavoritesTimers');
   },
   methods: {
     resetGrid() {
