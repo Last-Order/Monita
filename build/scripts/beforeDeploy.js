@@ -10,10 +10,12 @@ const exec = util.promisify(require('child_process').exec);
         //
     }
     if (process.platform === "win32") {
-        try {
-            await exec(`copy ${path.resolve(__dirname, '../../dist_electron/*.msi')} ${path.resolve(__dirname, '../../dist_binary/')}`);
-        }  catch (e) {
-            // 
+        for (const ext of ['exe', 'msi']) {
+            try {
+                await exec(`copy ${path.resolve(__dirname, '../../dist_electron/*.' + ext)} ${path.resolve(__dirname, '../../dist_binary/')}`);
+            }  catch (e) {
+                // 
+            }
         }
     } else {
         for (const ext of ['dmg', 'zip', 'appImage', 'deb', 'rpm']) {

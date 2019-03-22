@@ -10,8 +10,8 @@ module.exports = {
                 artifactName: "monita-${os}-${version}.${ext}",
                 productName: 'Monita',
                 win: {
-                    target: 'msi',
-                    // icon: 'build/icon.ico'
+                    target: ['msi', 'protable'],
+                    icon: 'build/icons/icon.ico'
                 },
                 mac: {
                     category: 'public.app-category.developer-tools',
