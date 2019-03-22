@@ -54,3 +54,13 @@ body {
 .grid-actions-container i {
     cursor: pointer;
 }
+.grid-wait {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    text-align: center;
+    transform: translateY(-50%);
+    transform: translateX(-50%);
+    font-size: 14px;
+}

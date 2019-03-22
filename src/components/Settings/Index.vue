@@ -8,11 +8,16 @@
     <v-tab-item :key="2">
       <layout-setting></layout-setting>
     </v-tab-item>
+    <v-tab :key="3">收藏</v-tab>
+    <v-tab-item :key="3">
+      <favorite-setting></favorite-setting>
+    </v-tab-item>
   </v-tabs>
 </template>
 <script>
 import GeneralSetting from './General';
 import LayoutSetting from './Layout';
+import FavoriteSetting from './Favorite';
 export default {
   data() {
       return {
@@ -21,7 +26,8 @@ export default {
   },
   components: {
       GeneralSetting,
-      LayoutSetting
+      LayoutSetting,
+      FavoriteSetting
   }
 };
 </script>

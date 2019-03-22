@@ -63,8 +63,19 @@
           <v-icon small @click="refreshVideo(item)">refresh</v-icon>
         </div>
         <template v-if="item.video.status === 'playing'">
-          <player :type="item.video.type" :url="item.video.url" :title="item.video.title"/>
+          <player :type="item.video.type" :url="item.video.url" :title="item.video.title" />
         </template>
+        <template v-else-if="item.video.status === 'wait'">
+          <div class="grid-wait">
+            <div>{{ item.video.title }}</div>
+            <div>正在等待</div>
+          </div>
+        </template>
+        <!-- <template v-else-if="item.video.status === 'error'">
+          <div class="grid-error">
+            <span>视频播放发生错误</span>
+          </div>
+        </template> -->
         <template v-else-if="item.video.status === 'empty'">
           <div class="add-video">
             <v-btn
@@ -101,7 +112,8 @@ const videoItemTemplate = {
   pageUrl: "",
   url: "",
   title: "",
-  status: "empty"
+  status: "empty",
+  channelName: ""
 };
 
 const gridItemTemplate = {
@@ -206,7 +218,7 @@ export default {
             y: i,
             w: 1,
             h: 1,
-            i: i.toString() + "-" + j.toString(),
+            i: j.toString() + "-" + i.toString(),
             ...gridItemTemplate,
             video: {
               ...videoItemTemplate
@@ -289,6 +301,9 @@ export default {
         this.showErrorMessage(e);
       }
       this.hideNotice();
+    },
+    handlePlayerError(item, e) {
+      item.video.status = 'error';
     },
     showErrorMessage(message) {
       this.error.show = true;

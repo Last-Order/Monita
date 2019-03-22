@@ -1,7 +1,7 @@
 <template>
   <div class="player-container" @wheel="handleWheel">
     <div class="video-info">
-      <span class="video-info-title">{{ title }} </span> 
+      <span class="video-info-title">{{ title }}</span>
       <span class="video-info-volume">音量：{{ this.volume }}%</span>
     </div>
     <div class="video-container">
@@ -17,29 +17,35 @@ export default {
   props: ["url", "type", "title"],
   data() {
     return {
-      volume: 100
+      volume: 100,
+      player: undefined
     };
   },
   methods: {
     initPlayer() {
       if (this.type === "hls") {
-        const player = new HLS();
+        this.player = new HLS();
         const playerNode = this.$refs.player;
-        player.loadSource(this.url);
-        player.attachMedia(playerNode);
-        player.on(HLS.Events.MANIFEST_PARSED, () => {
+        this.player.loadSource(this.url);
+        this.player.attachMedia(playerNode);
+        this.player.on(HLS.Events.ERROR, this.handleError);
+        this.player.on(HLS.Events.MANIFEST_PARSED, () => {
           playerNode.play();
         });
       } else if (this.type === "flv") {
         const playerNode = this.$refs.player;
-        const flvPlayer = FLV.createPlayer({
+        this.player = FLV.createPlayer({
           type: "flv",
           url: this.url
         });
-        flvPlayer.attachMediaElement(playerNode);
-        flvPlayer.load();
-        flvPlayer.play();
+        this.player.attachMediaElement(playerNode);
+        this.player.load();
+        this.player.on(FLV.Events.ERROR, this.handleError);
+        this.player.play();
       }
+    },
+    destroyPlayer() {
+      this.player.destroy();
     },
     handleWheel(e) {
       e.preventDefault();
@@ -53,17 +59,24 @@ export default {
           this.volume = this.volume + 10;
         }
       }
+    },
+    handleError(error, errorType, errorDetail) {
+      this.$emit('error', error);
     }
   },
   watch: {
     volume() {
       this.$refs.player.volume = this.volume / 100;
+    },
+    url() {
+      this.destroyPlayer();
+      this.initPlayer();
     }
   },
   mounted() {
     if (this.url) {
       this.initPlayer();
     }
-  }
+  },
 };
 </script>

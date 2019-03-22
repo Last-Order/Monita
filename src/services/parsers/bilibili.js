@@ -30,7 +30,6 @@ export default async function parse(url) {
                     title: roomInfo.baseInfoRes.data.title
                 });
             }
-            
         } catch (e) {
             reject(e);
         }
