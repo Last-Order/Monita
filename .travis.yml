@@ -25,6 +25,7 @@ script:
         -v ${PWD}:/project \
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+        -v /home/travis/build/Last-Order/Monita/dist_electron/:/project/dist_electron/ \
         electronuserland/builder:wine \
         /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn electron:build-win && yarn electron:build-linux"
     else

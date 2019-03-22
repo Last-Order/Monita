@@ -3,6 +3,7 @@ const path = require('path');
 const exec = util.promisify(require('child_process').exec);
 
 (async () => {
+    console.log('Contents of build directory:');
     await exec(`ls -a ${path.resolve(__dirname, '../../dist_electron')}`);
     for (const ext of ['dmg', 'zip', 'appImage', 'deb', 'rpm', 'msi']) {
         try {
