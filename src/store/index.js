@@ -16,11 +16,11 @@ const store = new Vuex.Store({
             },
             background: Storage.getSetting('background')
         },
-        favorites: [{
+        favorites: JSON.parse(Storage.getSetting('favorites', `[{
             channelName: '有栖マナOfficial',
             pageUrl: 'https://live.bilibili.com/3822389',
             status: 'unknown'
-        }],
+        }]`)),
         favoritesTimers: new Map()
     },
     mutations: {
@@ -96,10 +96,12 @@ const store = new Vuex.Store({
             }, state.settings.general.watchInterval);
             commit('addFavorite', item);
             commit('addFavoriteTimer', item.pageUrl, timer);
+            Storage.setSetting('favorites', JSON.stringify(state.favorites));
         },
-        deleteFavorite({ commit }, item) {
+        deleteFavorite({ commit, state }, item) {
             commit('deleteFavorite', item);
             commit('removeFavoriteTimer', item.pageUrl);
+            Storage.setSetting('favorites', JSON.stringify(state.favorites));
         }
     }
 });

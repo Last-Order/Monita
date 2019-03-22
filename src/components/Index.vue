@@ -14,24 +14,7 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model="showAddVideoDialog" max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">添加视频</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex>
-                <v-text-field v-model="form.newVideoUrl" label="输入视频地址" required></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click="addVideo" :loading="form.loading">添加</v-btn>
-        </v-card-actions>
-      </v-card>
+      <add-video-form @added="handleVideoAdded" @error="showErrorMessage" />
     </v-dialog>
     <grid-layout
       :layout.sync="layout"
@@ -81,7 +64,7 @@
             <v-btn
               flat
               color="info"
-              @click="form.index = item.i, showAddVideoDialog = true"
+              @click="activeGridIndex = item.i, showAddVideoDialog = true"
               style="z-index: 27"
             >+</v-btn>
           </div>
@@ -105,6 +88,7 @@ import VideoParser from "../services/VideoParser";
 import Storage from "../services/Storage";
 import Player from "./Player/Player";
 import SettingPanel from "./Settings/Index";
+import AddVideoForm from './Home/AddVideoForm';
 import { mapState } from "vuex";
 
 const videoItemTemplate = {
@@ -134,11 +118,7 @@ export default {
       showAddVideoDialog: false,
       showSettingPanelDialog: false,
       settingPanelTab: 0,
-      form: {
-        index: "",
-        newVideoUrl: "",
-        loading: false
-      },
+      activeGridIndex: '',
       layout: [],
       layoutConfig: {
         cols: this.$store.state.settings.layout.cols,
@@ -241,33 +221,9 @@ export default {
         (viewportHeight - (this.layoutConfig.rows + 1) * 10 - 10) /
         this.layoutConfig.rows;
     },
-    async addVideo() {
-      const url = this.form.newVideoUrl;
-      if (!url) {
-        this.showErrorMessage("视频地址不能为空");
-        return;
-      }
-      if (url.endsWith(".m3u8")) {
-        // Raw M3U8 URL, play directly.
-        this.setVideoUrl(this.form.index, "hls", url, "", "playing", "");
-      }
-      this.form.loading = true;
-      try {
-        const result = await VideoParser.parse(url);
-        this.setVideoUrl(
-          this.form.index,
-          result.type,
-          result.url,
-          result.title,
-          result.status,
-          url
-        );
+    async handleVideoAdded(video) {
+        this.setVideoUrl(this.activeGridIndex, video.type, video.url, video.title, video.status, video.pageUrl);
         this.showAddVideoDialog = false;
-        this.form.newVideoUrl = "";
-      } catch (e) {
-        this.showErrorMessage(e);
-      }
-      this.form.loading = false;
     },
     setVideoUrl(index, type, url, title, status, pageUrl) {
       for (const grid of this.layout) {
@@ -324,7 +280,8 @@ export default {
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
     Player,
-    SettingPanel
+    SettingPanel,
+    AddVideoForm
   }
 };
 </script>
