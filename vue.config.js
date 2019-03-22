@@ -7,7 +7,7 @@ module.exports = {
         electronBuilder: {
             builderOptions: {
                 appId: 'moe.sound.sora.monita',
-                artifactName: "monita-${os}.${ext}",
+                artifactName: "monita-${os}-${version}.${ext}",
                 productName: 'Monita',
                 win: {
                     target: 'msi',
