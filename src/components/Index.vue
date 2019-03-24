@@ -253,6 +253,23 @@ export default {
           grid.video.pageUrl = pageUrl;
         }
       }
+      if (status === "wait") {
+        // Listen on wait status
+        const timer = setInterval(async () => {
+          const videoInfo = await VideoParser.parse(pageUrl);
+          if (videoInfo.status === "playing") {
+            clearInterval(timer);
+            this.setVideoUrl(
+              index,
+              videoInfo.type,
+              videoInfo.url,
+              videoInfo.title,
+              videoInfo.status,
+              pageUrl
+            );
+          }
+        }, 30000);
+      }
     },
     closeVideo(item) {
       item.video = {

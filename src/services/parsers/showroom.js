@@ -6,11 +6,22 @@ export default async function parse(url) {
             const page = await axios.get(url);
             const doc = parser.parseFromString(page.data, "text/html");
             const videoInfo = JSON.parse(doc.getElementById('js-initial-data').dataset.json);
-            resolve({
-                type: 'hls',
-                url: videoInfo.streamingUrlHls,
-                title: doc.title
-            });
+            if (!videoInfo.streamingUrlHls) {
+                resolve({
+                    status: 'wait',
+                    type: 'hls',
+                    url: '',
+                    title: doc.title
+                })
+            } else {
+                resolve({
+                    status: 'playing',
+                    type: 'hls',
+                    url: videoInfo.streamingUrlHls,
+                    title: doc.title
+                });
+            }
+            
         } catch (e) {
             reject(e);
         }

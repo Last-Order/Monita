@@ -10,7 +10,7 @@ const exec = util.promisify(require('child_process').exec);
         await exec(`yarn electron:build-macos`);
     } else {
         // Linux
-        await exec(`apt-get install rpm -y`);
+        await exec(`sudo apt-get install rpm -y`);
         await exec(`yarn electron:build-linux`);
     }
 })()

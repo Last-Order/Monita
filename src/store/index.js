@@ -82,10 +82,12 @@ const store = new Vuex.Store({
     actions: {
         initFavoritesTimers({ commit, state }) {
             for (const fav of state.favorites) {
-                const timer = setInterval(async () => {
+                const task = async () => {
                     const status = await VideoParser.getStatus(fav.pageUrl);
                     commit('setFavoriteStatus', { pageUrl: fav.pageUrl, status });
-                }, state.settings.general.watchInterval);
+                }
+                task(); // Execute once immediately
+                const timer = setInterval(task, state.settings.general.watchInterval);
                 commit('addFavoriteTimer', fav.pageUrl, timer);
             }
         },
