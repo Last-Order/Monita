@@ -268,7 +268,7 @@ export default {
               pageUrl
             );
           }
-        }, 30000);
+        }, this.$store.state.settings.general.watchInterval);
       }
     },
     closeVideo(item) {

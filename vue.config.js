@@ -10,12 +10,12 @@ module.exports = {
                 artifactName: "monita-${os}-${version}.${ext}",
                 productName: 'Monita',
                 win: {
-                    target: ['msi'],
+                    target: ['msi', 'portable'],
                     icon: 'build/icons/icon.ico'
                 },
                 mac: {
                     category: 'public.app-category.developer-tools',
-                    target: ['dmg', 'zip']
+                    target: ['dmg']
                 },
                 linux: {
                     target: ['deb', 'appImage']
