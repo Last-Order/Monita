@@ -62,8 +62,9 @@ export default {
         return;
       }
       try {
-        const layout = JSON.parse(decodeURI(atob(v)));
+        const layout = JSON.parse(decodeURI(atob(this.layout)));
         Storage.setSetting('layout', JSON.stringify(layout));
+        location.reload();
       } catch (e) {
         this.$emit("error", e);
       }
