@@ -1,3 +1,5 @@
+env:
+  - YARN_GPG=no
 matrix:
   include:
     - os: osx
