@@ -10,14 +10,17 @@ export default async function parse(url) {
                 resolve({
                     status: 'wait',
                     type: 'hls',
-                    url: '',
+                    streams: [],
                     title: doc.title
                 })
             } else {
                 resolve({
                     status: 'playing',
                     type: 'hls',
-                    url: videoInfo.streamingUrlHls,
+                    streams: [{
+                        name: '默认',
+                        url: videoInfo.streamingUrlHls
+                    }],
                     title: doc.title
                 });
             }

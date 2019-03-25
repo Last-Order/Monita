@@ -112,11 +112,8 @@ export default {
       try {
         const result = await VideoParser.parse(url);
         this.$emit("added", {
-          type: result.type,
-          url: result.url,
-          title: result.title,
-          status: result.status,
-          pageUrl: url
+          ...result,
+          pageUrl: url,
         });
         this.form.newVideoUrl = "";
       } catch (e) {

@@ -14,8 +14,11 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="showAddVideoDialog" max-width="600px">
+    <v-dialog v-model="showAddVideoDialog">
       <add-video-form @added="handleVideoAdded" @error="showErrorMessage"/>
+    </v-dialog>
+    <v-dialog v-model="showSelectStreamsDialog">
+      <select-stream-form :streams="streamsToSelect" @selected="handleStreamSelected"/>
     </v-dialog>
     <grid-layout
       :layout.sync="layout"
@@ -45,11 +48,12 @@
           <!-- Grid Actions Overlay -->
           <v-icon small @click="closeVideo(item)">close</v-icon>
           <v-icon small @click="refreshVideo(item)">refresh</v-icon>
+          <v-icon small @click="selectStream(item)">menu</v-icon>
         </div>
         <template v-if="item.video.status === 'playing'">
           <player
             :type="item.video.type"
-            :url="item.video.url"
+            :url="item.video.nowPlayingStream"
             :title="item.video.title"
             :item="item"
             @error="handlePlayerError"
@@ -96,12 +100,14 @@ import Storage from "../services/Storage";
 import Player from "./Player/Player";
 import SettingPanel from "./Settings/Index";
 import AddVideoForm from "./Home/AddVideoForm";
+import SelectStreamForm from "./Home/SelectStreamForm";
 import { mapState } from "vuex";
 
 const videoItemTemplate = {
   type: "raw",
   pageUrl: "",
-  url: "",
+  streams: [],
+  nowPlayingStream: "",
   title: "",
   status: "empty",
   channelName: ""
@@ -124,8 +130,10 @@ export default {
       },
       showAddVideoDialog: false,
       showSettingPanelDialog: false,
+      showSelectStreamsDialog: false,
       settingPanelTab: 0,
       activeGridIndex: "",
+      streamsToSelect: [],
       layout: [],
       layoutConfig: {
         cols: this.$store.state.settings.layout.cols,
@@ -233,40 +241,34 @@ export default {
         this.layoutConfig.rows;
     },
     async handleVideoAdded(video) {
-      this.setVideoUrl(
-        this.activeGridIndex,
-        video.type,
-        video.url,
-        video.title,
-        video.status,
-        video.pageUrl
-      );
+      this.setVideoUrl(this.activeGridIndex, {
+        ...video
+      });
       this.showAddVideoDialog = false;
     },
-    setVideoUrl(index, type, url, title, status, pageUrl) {
+    setVideoUrl(index, videoInfo) {
       for (const grid of this.layout) {
         if (grid.i === index) {
-          grid.video.status = status;
-          grid.video.type = type;
-          grid.video.url = url;
-          grid.video.title = title;
-          grid.video.pageUrl = pageUrl;
+          grid.video = {
+            ...grid.video,
+            nowPlayingStream:
+              videoInfo.nowPlayingStream ||
+              (videoInfo.status === "playing" ? videoInfo.streams[0].url : ""),
+            ...videoInfo
+          };
         }
       }
       if (status === "wait") {
         // Listen on wait status
         const timer = setInterval(async () => {
-          const videoInfo = await VideoParser.parse(pageUrl);
+          const videoInfo = await VideoParser.parse(videoInfo.pageUrl);
           if (videoInfo.status === "playing") {
             clearInterval(timer);
-            this.setVideoUrl(
-              index,
-              videoInfo.type,
-              videoInfo.url,
-              videoInfo.title,
-              videoInfo.status,
-              pageUrl
-            );
+            this.setVideoUrl(index, {
+              ...videoInfo,
+              pageUrl,
+              nowPlayingStream: videoInfo.streams[0].url
+            });
           }
         }, this.$store.state.settings.general.watchInterval);
       }
@@ -283,18 +285,28 @@ export default {
       this.showNotice("正在刷新");
       try {
         const result = await VideoParser.parse(item.video.pageUrl);
-        this.setVideoUrl(
-          item.i,
-          result.type,
-          result.url,
-          result.title,
-          result.status,
-          item.video.pageUrl
-        );
+        this.setVideoUrl(item.i, {
+          ...result,
+          pageUrl: item.video.pageUrl
+        });
       } catch (e) {
         this.showErrorMessage(e);
       }
       this.hideNotice();
+    },
+    selectStream(item) {
+      if (item.video.status !== "playing") {
+        return this.showErrorMessage("没有更多流可以切换");
+      }
+      this.activeGridIndex = item.i;
+      this.showSelectStreamsDialog = true;
+      this.streamsToSelect = item.video.streams;
+    },
+    handleStreamSelected(url) {
+      this.setVideoUrl(this.activeGridIndex, {
+        nowPlayingStream: url
+      });
+      this.showSelectStreamsDialog = false;
     },
     refresh() {
       location.reload();
@@ -319,7 +331,8 @@ export default {
     GridItem: VueGridLayout.GridItem,
     Player,
     SettingPanel,
-    AddVideoForm
+    AddVideoForm,
+    SelectStreamForm
   }
 };
 </script>

@@ -19,14 +19,19 @@ export default async function parse(url) {
                 resolve({
                     status: 'playing',
                     type: 'flv',
-                    url: roomInfo.playUrlRes.data.durl[0].url,
+                    streams: roomInfo.playUrlRes.data.durl.map((item, index) => {
+                        return {
+                            name: index === 0 ? '主线' : `备线${index}`,
+                            url: item.url
+                        }
+                    }),
                     title: roomInfo.baseInfoRes.data.title
                 });
             } else {
                 resolve({
                     status: 'wait',
                     type: 'flv',
-                    url: '',
+                    streams: [],
                     title: roomInfo.baseInfoRes.data.title
                 });
             }
