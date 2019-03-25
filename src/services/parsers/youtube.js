@@ -13,12 +13,28 @@ export default async function parse(url) {
         const isLiveContent = page.data.match(/"isLiveContent":(.+?)}/)[1] === 'true';
         const title = page.data.match(/"title":"(.+?)"/)[1];
         try {
-            const hlsUrl = page.data.match(/"hlsManifestUrl\\":\\"(.+?)\\"/)[1].replace(/\\\//ig, '/');
+            const hlsMasterUrl = page.data.match(/"hlsManifestUrl\\":\\"(.+?)\\"/)[1].replace(/\\\//ig, '/');
+            const hlsPlaylists = (await axios.get(hlsMasterUrl)).data;
+            const streams = [];
+            for (const line of hlsPlaylists.split('\n')) {
+                if (line.startsWith('#EXT-X-STREAM-INF')) {
+                    const resolution = line.match(/RESOLUTION=\d+x(\d+)/)[1];
+                    const frameRate = line.match(/FRAME-RATE=(\d+)/)[1];
+                    if (frameRate !== '30') {
+                        streams.push({
+                            name: `${resolution}p${frameRate}fps`
+                        });
+                    } else {
+                        streams.push({
+                            name: `${resolution}p`
+                        });
+                    }
+                } else if (!line.startsWith('#') && line !== '') {
+                    streams[streams.length - 1].url = line;
+                }
+            }
             resolve({
-                streams: [{
-                    name: '默认',
-                    url: hlsUrl
-                }],
+                streams: streams.reverse(),
                 title,
                 status: 'playing',
                 type: 'hls'

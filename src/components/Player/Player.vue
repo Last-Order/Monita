@@ -116,7 +116,11 @@ export default {
       }
     },
     handleError(error, errorType, errorDetail) {
-      this.$emit("error", this.item, error, errorType, errorDetail);
+      if (error === "hlsError" && errorType.fatal === false) {
+        // ignore
+      } else {
+        this.$emit("error", this.item, error, errorType, errorDetail);
+      }
     }
   },
   watch: {
@@ -124,7 +128,8 @@ export default {
       if (this.type !== "youtube") {
         this.$refs.player.volume = this.volume / 100;
       } else {
-        this.player.a.contentDocument.getElementsByTagName('video')[0].volume = this.volume / 100;
+        this.player.a.contentDocument.getElementsByTagName("video")[0].volume =
+          this.volume / 100;
       }
     },
     url() {
