@@ -92,10 +92,12 @@ const store = new Vuex.Store({
             }
         },
         addFavorite({ commit, state }, item) {
-            const timer = setInterval(async () => {
+            const task = async () => {
                 const status = await VideoParser.getStatus(item.pageUrl);
                 commit('setFavoriteStatus', { pageUrl: item.pageUrl, status });
-            }, state.settings.general.watchInterval);
+            };
+            task();
+            const timer = setInterval(task, state.settings.general.watchInterval);
             commit('addFavorite', item);
             commit('addFavoriteTimer', item.pageUrl, timer);
             Storage.setSetting('favorites', JSON.stringify(state.favorites));

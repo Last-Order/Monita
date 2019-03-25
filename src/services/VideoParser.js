@@ -13,6 +13,11 @@ export default class Parser {
                         resolve(await parser.default(url));
                         break;
                     }
+                    case 'www.youtube.com': {
+                        const parser = await import('./parsers/youtube');
+                        resolve(await parser.default(url));
+                        break;
+                    }
                     default: {
                         reject('不受支持的网站');
                     }

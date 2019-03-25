@@ -12,7 +12,7 @@ const exec = util.promisify(require('child_process').exec);
         } else {
             // Linux
             // await exec(`sudo apt-get install rpm -y`);
-            await exec(`yarn electron:build-linux`);
+            console.log(await exec(`yarn electron:build-linux`));
         }
     } catch (e) {
         console.log(e);

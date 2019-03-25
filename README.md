@@ -14,6 +14,12 @@ Monita 是一个基于 Electron 的、用于同时观看多个直播的工具。
 
 Tips: https://gist.github.com/Last-Order/de0a44d1c60af561582f5c855ec92d78 这里有一份收藏列表可以导入，涵盖了部分常用频道。
 
+## 支持网站列表
+
+* Bilibili 直播
+* Showroom
+* YouTube Live (有限支持)
+
 ## Project setup
 ```
 yarn install

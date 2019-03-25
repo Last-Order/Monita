@@ -4,7 +4,7 @@
       <v-container>
         <v-layout>
           <v-flex>
-            <v-text-field v-model="watchInterval" label="频道监控刷新间隔(毫秒)"></v-text-field>
+            <v-text-field v-model="watchInterval" label="频道监控刷新间隔(毫秒) / 已经建立的监视需要刷新后生效"></v-text-field>
           </v-flex>
         </v-layout>
         <v-divider />
