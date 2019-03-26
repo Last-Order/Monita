@@ -20,6 +20,14 @@ Tips: https://gist.github.com/Last-Order/de0a44d1c60af561582f5c855ec92d78 这里
 * Showroom
 * YouTube Live (有限支持)
 
+## Q&A
+
+* Q: 怎么挂代理
+* A: Monita 目前走系统代理
+
+* Q: YouTube 播不了
+* A: 先更新、确认自己梯子是不是挂了、再提 issue 
+
 ## Project setup
 ```
 yarn install
