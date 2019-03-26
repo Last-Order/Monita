@@ -13,32 +13,46 @@ export default async function parse(url) {
         const isLiveContent = page.data.match(/"isLiveContent":(.+?)}/)[1] === 'true';
         const title = page.data.match(/"title":"(.+?)"/)[1];
         try {
-            const hlsMasterUrl = page.data.match(/"hlsManifestUrl\\":\\"(.+?)\\"/)[1].replace(/\\\//ig, '/');
-            const hlsPlaylists = (await axios.get(hlsMasterUrl)).data;
-            const streams = [];
-            for (const line of hlsPlaylists.split('\n')) {
-                if (line.startsWith('#EXT-X-STREAM-INF')) {
-                    const resolution = line.match(/RESOLUTION=\d+x(\d+)/)[1];
-                    const frameRate = line.match(/FRAME-RATE=(\d+)/)[1];
-                    if (frameRate !== '30') {
-                        streams.push({
-                            name: `${resolution}p${frameRate}fps`
-                        });
-                    } else {
-                        streams.push({
-                            name: `${resolution}p`
-                        });
+            const playabilityStatus = page.data.match(/"playabilityStatus":{"status":"(.+?)"/);
+            if (playabilityStatus[1] === 'LIVE_STREAM_OFFLINE') {
+                resolve({
+                    title,
+                    status: 'wait',
+                    type: 'hls',
+                    streams: []
+                });
+            } else if (playabilityStatus[1] === 'OK') {
+                const hlsMasterUrl = page.data.match(/"hlsManifestUrl\\":\\"(.+?)\\"/)[1].replace(/\\\//ig, '/');
+                const hlsPlaylists = (await axios.get(hlsMasterUrl)).data;
+                const streams = [];
+                for (const line of hlsPlaylists.split('\n')) {
+                    if (line.startsWith('#EXT-X-STREAM-INF')) {
+                        const resolution = line.match(/RESOLUTION=\d+x(\d+)/)[1];
+                        const frameRate = line.match(/FRAME-RATE=(\d+)/)[1];
+                        if (frameRate !== '30') {
+                            streams.push({
+                                name: `${resolution}p${frameRate}fps`
+                            });
+                        } else {
+                            streams.push({
+                                name: `${resolution}p`
+                            });
+                        }
+                    } else if (!line.startsWith('#') && line !== '') {
+                        streams[streams.length - 1].url = line;
                     }
-                } else if (!line.startsWith('#') && line !== '') {
-                    streams[streams.length - 1].url = line;
                 }
+                console.log(streams);
+                resolve({
+                    streams: streams.reverse(),
+                    title,
+                    status: 'playing',
+                    type: 'hls'
+                });
+            } else {
+                console.log(playabilityStatus);
+                throw new Error();
             }
-            resolve({
-                streams: streams.reverse(),
-                title,
-                status: 'playing',
-                type: 'hls'
-            });
         } catch (e) {
             // Use embed player
             if (url.includes('channel')) {
@@ -67,6 +81,6 @@ export default async function parse(url) {
                 });
             }
         }
-        
+
     });
 }
