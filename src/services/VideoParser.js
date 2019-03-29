@@ -18,6 +18,11 @@ export default class Parser {
                         resolve(await parser.default(url));
                         break;
                     }
+                    case 'twitcasting.tv': {
+                        const parser = await import('./parsers/twitcasting');
+                        resolve(await parser.default(url));
+                        break;
+                    }
                     default: {
                         reject('不受支持的网站');
                     }

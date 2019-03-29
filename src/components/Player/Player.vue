@@ -119,6 +119,7 @@ export default {
       if (error === "hlsError" && errorType.fatal === false) {
         // ignore
       } else {
+        this.destroyPlayer();
         this.$emit("error", this.item, error, errorType, errorDetail);
       }
     }
@@ -134,7 +135,9 @@ export default {
     },
     url() {
       this.destroyPlayer();
-      this.initPlayer();
+      if (this.url) {
+        this.initPlayer();
+      }
     }
   },
   mounted() {

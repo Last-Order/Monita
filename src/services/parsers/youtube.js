@@ -6,6 +6,8 @@ export default async function parse(url) {
             videoId = url.match(/\/(.+)/)[1];
         } else if (url.includes('channel')) {
             // get later
+        } else if (url.includes('user')) {
+            // get later
         } else {
             videoId = url.match(/\?v=(.+)/)[1];
         }
@@ -42,7 +44,6 @@ export default async function parse(url) {
                         streams[streams.length - 1].url = line;
                     }
                 }
-                console.log(streams);
                 resolve({
                     streams: streams.reverse(),
                     title,
