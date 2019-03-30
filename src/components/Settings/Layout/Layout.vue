@@ -26,6 +26,26 @@
             <v-text-field type="number" v-model="cols" label="列数"></v-text-field>
           </v-flex>
         </v-layout>
+        <v-layout>
+          <v-flex>
+            <v-btn flat color="red" @click.stop="showResetConfirmDialog = true">重置布局</v-btn>
+          </v-flex>
+          <v-dialog v-model="showResetConfirmDialog" max-width="290">
+            <v-card>
+              <v-card-title>
+                <span class="headline">确认操作</span>
+              </v-card-title>
+              <v-card-text>
+                确定要重置布局吗，本操作不可逆
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn flat>取消</v-btn>
+                <v-btn flat color="red" @click="resetLayout">确认</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-layout>
       </v-container>
     </v-form>
   </v-container>
@@ -33,11 +53,13 @@
 <script>
 import ImportLayout from './Import';
 import ExportLayout from './Export';
+import Storage from '@/services/Storage';
 export default {
   data() {
     return {
       showImportDialog: false,
-      showExportDialog: false
+      showExportDialog: false,
+      showResetConfirmDialog: false
     };
   },
   computed: {
@@ -57,6 +79,12 @@ export default {
         this.$store.commit("updateLayoutCols", cols);
       }
     }
+  },
+  methods: {
+    resetLayout() {
+      Storage.deleteSetting('layout');
+      location.reload();
+    },
   },
   components: {
     ExportLayout,

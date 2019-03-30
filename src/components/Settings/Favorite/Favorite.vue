@@ -4,10 +4,10 @@
       <add-favorite-form @added="handleNewFavoriteAdded"></add-favorite-form>
     </v-dialog>
     <v-dialog v-model="showExportDialog">
-      <export-favorite @close="showExportDialog = false" />
+      <export-favorite @close="showExportDialog = false"/>
     </v-dialog>
     <v-dialog v-model="showImportDialog">
-      <import-favorite @close="showImportDialog = false" />
+      <import-favorite @close="showImportDialog = false"/>
     </v-dialog>
     <v-toolbar flat color="white">
       <v-text-field v-model="keyword" append-icon="search" label="搜索" single-line hide-details></v-text-field>
@@ -16,11 +16,20 @@
       <v-btn small dark class="mb-2" @click="showExportDialog = true">导出</v-btn>
       <v-btn small dark class="mb-2" @click="showImportDialog = true">导入</v-btn>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="favorites" rows-per-page-text="每页数量" :rows-per-page-items="[10, 20]" :search="keyword">
+    <v-data-table
+      :headers="headers"
+      :items="favorites"
+      rows-per-page-text="每页数量"
+      :rows-per-page-items="[10, 20]"
+      :search="keyword"
+      no-results-text="无匹配结果"
+    >
       <template v-slot:items="props">
         <td>{{ props.item.channelName }}</td>
         <td>{{ props.item.pageUrl }}</td>
-        <td><channel-status :status="props.item.status" /></td>
+        <td>
+          <channel-status :status="props.item.status"/>
+        </td>
         <td>
           <v-btn flat small color="error" @click="deleteItem(props.item)">删除</v-btn>
         </td>
@@ -29,11 +38,11 @@
   </v-container>
 </template>
 <script>
-import ImportFavorite from './Import';
-import ExportFavorite from './Export';
-import AddFavoriteForm from './AddFavoriteForm';
-import ChannelStatus from '../../Common/ChannelStatus';
-import { mapState } from 'vuex';
+import ImportFavorite from "./Import";
+import ExportFavorite from "./Export";
+import AddFavoriteForm from "./AddFavoriteForm";
+import ChannelStatus from "../../Common/ChannelStatus";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -59,7 +68,7 @@ export default {
         }
       ],
       showExportDialog: false,
-      showImportDialog: false,
+      showImportDialog: false
     };
   },
   computed: {
@@ -69,13 +78,13 @@ export default {
   },
   methods: {
     deleteItem(item) {
-      this.$store.dispatch('deleteFavorite', item);
+      this.$store.dispatch("deleteFavorite", item);
     },
     handleNewFavoriteAdded(channelName, pageUrl) {
-      this.$store.dispatch('addFavorite', {
+      this.$store.dispatch("addFavorite", {
         channelName,
         pageUrl,
-        status: 'unknown',
+        status: "unknown"
       });
       this.showAddFavoritePanel = false;
     }

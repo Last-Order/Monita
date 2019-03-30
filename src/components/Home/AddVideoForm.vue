@@ -1,16 +1,36 @@
 <template>
   <v-card>
-    <v-card-title>
+    <!-- <v-card-title>
       <span class="headline">添加视频</span>
-    </v-card-title>
+    </v-card-title> -->
     <v-card-text>
       <v-container grid-list-md>
-        <v-layout wrap>
+        <v-layout>
+          <v-flex>
+            <span class="section-title">输入链接添加</span>
+          </v-flex>
+        </v-layout>
+        <v-layout>
           <v-flex>
             <v-text-field v-model="form.newVideoUrl" label="输入视频地址" required></v-text-field>
           </v-flex>
         </v-layout>
         <v-divider/>
+        <v-layout>
+          <v-flex>
+            <span class="section-title">从收藏列表添加</span>
+          </v-flex>
+        </v-layout>
+        <v-toolbar flat color="white">
+          <v-spacer/>
+          <v-text-field
+            v-model="form.keyword"
+            append-icon="search"
+            label="搜索"
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-toolbar>
         <v-layout>
           <v-flex>
             <v-data-table
@@ -20,6 +40,8 @@
               :rows-per-page-items="[10, 20]"
               :pagination.sync="pagination"
               :custom-sort="sort"
+              :search="form.keyword"
+              no-results-text="无匹配结果"
             >
               <template v-slot:items="props">
                 <td>{{ props.item.channelName }}</td>
@@ -41,6 +63,14 @@
     </v-card-actions>
   </v-card>
 </template>
+<style>
+.section-title {
+  margin: 7px 0;
+  font-size: larger;
+  font-weight: bold;
+  display: block;
+}
+</style>
 <script>
 import VideoParser from "@/services/VideoParser";
 import ChannelStatus from "../Common/ChannelStatus";
@@ -51,7 +81,8 @@ export default {
     return {
       form: {
         loading: false,
-        newVideoUrl: ""
+        newVideoUrl: "",
+        keyword: ""
       },
       pagination: {
         sortBy: "status",
@@ -113,7 +144,7 @@ export default {
         const result = await VideoParser.parse(url);
         this.$emit("added", {
           ...result,
-          pageUrl: url,
+          pageUrl: url
         });
         this.form.newVideoUrl = "";
       } catch (e) {

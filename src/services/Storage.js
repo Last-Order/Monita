@@ -10,4 +10,12 @@ export default class Storage {
         settings[name] = value;
         localStorage.setItem('settings', JSON.stringify(settings));
     }
+    static deleteSetting(name) {
+        const settings = localStorage.getItem('settings') ?
+            JSON.parse(localStorage.getItem('settings')) : {};
+        if (Object.keys(settings).includes(name)) {
+            delete settings[name];
+            localStorage.setItem('settings', JSON.stringify(settings));
+        }
+    }
 }
