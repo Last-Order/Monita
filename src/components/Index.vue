@@ -20,6 +20,9 @@
     <v-dialog v-model="showSelectStreamsDialog">
       <select-stream-form :streams="streamsToSelect" @selected="handleStreamSelected"/>
     </v-dialog>
+    <v-dialog v-model="showNewVersionTip">
+      <new-version-tip :version="latestVersion" @close="showNewVersionTip = false" />
+    </v-dialog>
     <grid-layout
       :layout.sync="layout"
       :col-num="layoutConfig.cols"
@@ -95,13 +98,15 @@
 <script>
 import "./Index.css";
 import VueGridLayout from "vue-grid-layout";
-import VideoParser from "../services/VideoParser";
-import Storage from "../services/Storage";
+import VideoParser from "@/services/VideoParser";
+import Version from "@/services/Version";
+import Storage from "@/services/Storage";
 import Player from "./Player/Player";
 import SettingPanel from "./Settings/Index";
 import AddVideoForm from "./Home/AddVideoForm";
 import SelectStreamForm from "./Home/SelectStreamForm";
-import { mapState } from "vuex";
+import NewVersionTip from "./Home/NewVersionTip";
+import { mapState, Store } from "vuex";
 
 const videoItemTemplate = {
   type: "raw",
@@ -139,7 +144,9 @@ export default {
         cols: this.$store.state.settings.layout.cols,
         rows: this.$store.state.settings.layout.rows,
         rowHeight: 300
-      }
+      },
+      latestVersion: null,
+      showNewVersionTip: false
     };
   },
   computed: {
@@ -164,7 +171,7 @@ export default {
       deep: true
     }
   },
-  mounted() {
+  async mounted() {
     window.addEventListener("resize", this.resizeGrid);
     if (Storage.getSetting("layout")) {
       this.layout = JSON.parse(Storage.getSetting("layout"));
@@ -209,6 +216,17 @@ export default {
 
     // Init fav watching
     this.$store.dispatch("initFavoritesTimers");
+    // Check Version
+    const latestVersion = await Version.getLatestVersion();
+    const localVersion = Version.getLocalVersion();
+    const skippedVersions = Storage.getSetting("skippedVersions") || [];
+    if (
+      latestVersion.tag_name !== localVersion &&
+      !skippedVersions.includes(latestVersion)
+    ) {
+      this.latestVersion = latestVersion;
+      this.showNewVersionTip = true;
+    }    
   },
   methods: {
     resetGrid() {
@@ -332,7 +350,8 @@ export default {
     Player,
     SettingPanel,
     AddVideoForm,
-    SelectStreamForm
+    SelectStreamForm,
+    NewVersionTip
   }
 };
 </script>

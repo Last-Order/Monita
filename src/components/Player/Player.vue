@@ -146,6 +146,12 @@ export default {
     } else {
       this.initYouTubePlayer();
     }
+  },
+  beforeDestroy() {
+    this.destroyPlayer();
+  },
+  errorCaptured(e) {
+    console.log(e);
   }
 };
 </script>
