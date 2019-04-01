@@ -59,3 +59,8 @@ yarn run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+## Copyright
+
+Open-sourced under GPLv3. © 2018-2019, Eridanus Sora, member of MeowSound Idols.
