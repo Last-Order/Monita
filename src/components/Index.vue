@@ -222,7 +222,7 @@ export default {
     const skippedVersions = Storage.getSetting("skippedVersions") || [];
     if (
       latestVersion.tag_name !== localVersion &&
-      !skippedVersions.includes(latestVersion)
+      !skippedVersions.includes(latestVersion.tag_name)
     ) {
       this.latestVersion = latestVersion;
       this.showNewVersionTip = true;
