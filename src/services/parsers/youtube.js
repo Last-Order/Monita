@@ -15,6 +15,9 @@ export default async function parse(url) {
         const isLiveContent = page.data.match(/"isLiveContent":(.+?)}/)[1] === 'true';
         const title = page.data.match(/"title":"(.+?)"/)[1];
         try {
+            if (!isLiveContent) {
+                throw new Error('非直播内容 改用内嵌播放器');
+            }
             const playabilityStatus = page.data.match(/"playabilityStatus":{"status":"(.+?)"/);
             if (playabilityStatus[1] === 'LIVE_STREAM_OFFLINE') {
                 resolve({
@@ -52,7 +55,7 @@ export default async function parse(url) {
                 });
             } else {
                 console.log(playabilityStatus);
-                throw new Error();
+                throw new Error('解析失败 回落到内嵌播放器');
             }
         } catch (e) {
             // Use embed player
@@ -61,7 +64,7 @@ export default async function parse(url) {
             }
             if (!isLiveContent) {
                 resolve({
-                    status: 'playing',
+                    status: (url.endsWith('/live') || url.endsWith('/live/')) ? 'wait' : 'playing',
                     title,
                     streams: [{
                         name: '默认',

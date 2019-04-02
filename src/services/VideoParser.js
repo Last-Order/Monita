@@ -1,6 +1,18 @@
 export default class Parser {
     static parse(url) {
         return new Promise(async (resolve, reject) => {
+            // Raw HLS
+            if (url.endsWith('.m3u8')) {
+                resolve({
+                    type: 'hls',
+                    streams: [{
+                        name: '默认',
+                        url
+                    }],
+                    title: '',
+                    status: 'playing'
+                });
+            }
             try {
                 switch(new URL(url).host) {
                     case 'www.showroom-live.com': {

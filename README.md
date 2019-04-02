@@ -1,6 +1,8 @@
-# monita
+# Monita
+[![Build Status](https://travis-ci.org/Last-Order/Monita.svg?branch=master)](https://travis-ci.org/Last-Order/Monita)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Monita 是一个基于 Electron 的、用于同时观看多个直播的工具。目前处于开发阶段，还有许多功能未完成。
+Monita 是一个基于 Electron 的、用于同时观看多个直播的工具。
 
 ## 运行界面
 * 栅格式布局
