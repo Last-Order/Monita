@@ -18,7 +18,7 @@
       <add-video-form @added="handleVideoAdded" @error="showErrorMessage"/>
     </v-dialog>
     <v-dialog v-model="showSelectStreamsDialog">
-      <select-stream-form :streams="streamsToSelect" @selected="handleStreamSelected"/>
+      <select-stream-form :streams="streamsToSelect" @selected="handleStreamSelected" :url="streamNowSelected" :key="activeGridIndex"/>
     </v-dialog>
     <v-dialog v-model="showNewVersionTip">
       <new-version-tip :version="latestVersion" @close="showNewVersionTip = false" />
@@ -139,6 +139,7 @@ export default {
       settingPanelTab: 0,
       activeGridIndex: "",
       streamsToSelect: [],
+      streamNowSelected: "",
       layout: [],
       layoutConfig: {
         cols: this.$store.state.settings.layout.cols,
@@ -319,6 +320,7 @@ export default {
       this.activeGridIndex = item.i;
       this.showSelectStreamsDialog = true;
       this.streamsToSelect = item.video.streams;
+      this.streamNowSelected = item.video.nowPlayingStream;
     },
     handleStreamSelected(url) {
       this.setVideoUrl(this.activeGridIndex, {

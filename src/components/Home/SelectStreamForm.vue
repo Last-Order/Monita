@@ -22,7 +22,7 @@
 </template>
 <script>
 export default {
-  props: ["streams"],
+  props: ["streams", "url"],
   data() {
     return {
       form: {
@@ -32,12 +32,22 @@ export default {
     };
   },
   mounted() {
-
+    if (this.url) {
+      this.form.url = this.url;
+    }
+  },
+  beforeDestroy() {
+    this.form.url = "";
+  },
+  watch: {
+    url() {
+      this.form.url = this.url;
+    }
   },
   methods: {
-      handleApply() {
-          this.$emit('selected', this.form.url);
-      }
+    handleApply() {
+      this.$emit("selected", this.form.url);
+    }
   }
 };
 </script>
