@@ -2,7 +2,7 @@
   <v-tabs v-model="settingPanelTab">
     <v-tab :key="1">通用</v-tab>
     <v-tab-item :key="1">
-        <general-setting></general-setting>
+      <general-setting></general-setting>
     </v-tab-item>
     <v-tab :key="2">布局</v-tab>
     <v-tab-item :key="2">
@@ -12,22 +12,28 @@
     <v-tab-item :key="3">
       <favorite-setting></favorite-setting>
     </v-tab-item>
+    <v-tab :key="4">关于</v-tab>
+    <v-tab-item :key="4">
+      <about/>
+    </v-tab-item>
   </v-tabs>
 </template>
 <script>
-import GeneralSetting from './General';
-import LayoutSetting from './Layout/Layout';
-import FavoriteSetting from './Favorite/Favorite';
+import GeneralSetting from "./General";
+import LayoutSetting from "./Layout/Layout";
+import FavoriteSetting from "./Favorite/Favorite";
+import About from "./About";
 export default {
   data() {
-      return {
-          settingPanelTab: 0
-      }
+    return {
+      settingPanelTab: 0
+    };
   },
   components: {
-      GeneralSetting,
-      LayoutSetting,
-      FavoriteSetting
+    GeneralSetting,
+    LayoutSetting,
+    FavoriteSetting,
+    About
   }
 };
 </script>
