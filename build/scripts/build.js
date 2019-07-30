@@ -5,14 +5,14 @@ const exec = util.promisify(require('child_process').exec);
     try {
         if (process.platform === 'win32') {
             // Windows
-            await exec(`yarn electron:build-win`);
+            await exec(`npm run electron:build-win`);
         } else if (process.platform === 'darwin'){
             // macOS
-            await exec(`yarn electron:build-macos`);
+            await exec(`npm run electron:build-macos`);
         } else {
             // Linux
             // await exec(`sudo apt-get install rpm -y`);
-            console.log(await exec(`yarn electron:build-linux`));
+            console.log(await exec(`npm run electron:build-linux`));
         }
     } catch (e) {
         console.log(e);
