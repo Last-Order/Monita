@@ -7,6 +7,11 @@
             <v-text-field v-model="watchInterval" label="频道监控刷新间隔(毫秒) / 已经建立的监视需要刷新后生效"></v-text-field>
           </v-flex>
         </v-layout>
+        <v-layout>
+          <v-flex>
+            <v-checkbox label="窗口置顶" v-model="pinWindow"></v-checkbox>
+          </v-flex>
+        </v-layout>
         <v-divider />
         <v-layout>
           <v-flex>
@@ -19,6 +24,7 @@
   </v-container>
 </template>
 <script>
+const remote = require('electron').remote;
 export default {
   data() {
     return {
@@ -33,6 +39,20 @@ export default {
       set(watchInterval) {
         this.$store.commit('updateWatchInterval', watchInterval);
       }
+    },
+    pinWindow: {
+      get() {
+        return this.$store.state.settings.general.pinWindow;
+      },
+      set(pinWindow) {
+        
+        this.$store.commit('updatePinWindow', pinWindow);
+      }
+    }
+  },
+  watch: {
+    pinWindow() {
+      remote.getCurrentWindow().setAlwaysOnTop(this.pinWindow);
     }
   },
   methods: {

@@ -12,7 +12,8 @@ const store = new Vuex.Store({
                 cols: parseInt(Storage.getSetting('layout.cols', 2))
             },
             general: {
-                watchInterval: parseInt(Storage.getSetting('general.watchInterval', 30000))
+                watchInterval: parseInt(Storage.getSetting('general.watchInterval', 30000)),
+                pinWindow: Storage.getSetting('general.pinWindow', false)
             },
             background: Storage.getSetting('background')
         },
@@ -50,6 +51,10 @@ const store = new Vuex.Store({
                 state.settings.general.watchInterval = parseInt(interval);
                 Storage.setSetting('general.watchInterval', parseInt(interval));
             }
+        },
+        updatePinWindow(state, pinWindow) {
+            state.settings.general.pinWindow = pinWindow;
+            Storage.setSetting('general.pinWindow', pinWindow);
         },
         updateBackground(state, background) {
             state.settings.background = background;
