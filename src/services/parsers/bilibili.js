@@ -19,7 +19,7 @@ export default async function parse(url) {
                 resolve({
                     status: 'playing',
                     type: 'flv',
-                    streams: roomInfo.playUrlRes.data.durl.map((item, index) => {
+                    streams: roomInfo.roomInitRes.data.play_url.durl.map((item, index) => {
                         return {
                             name: index === 0 ? '主线' : `备线${index}`,
                             url: item.url

@@ -106,7 +106,7 @@ import SettingPanel from "./Settings/Index";
 import AddVideoForm from "./Home/AddVideoForm";
 import SelectStreamForm from "./Home/SelectStreamForm";
 import NewVersionTip from "./Home/NewVersionTip";
-import { mapState, Store } from "vuex";
+import { mapState } from "vuex";
 
 const videoItemTemplate = {
   type: "raw",
@@ -285,7 +285,6 @@ export default {
             clearInterval(timer);
             this.setVideoUrl(index, {
               ...videoInfo,
-              pageUrl,
               nowPlayingStream: videoInfo.streams[0].url
             });
           }
@@ -331,7 +330,7 @@ export default {
     refresh() {
       location.reload();
     },
-    handlePlayerError(item, e) {
+    handlePlayerError(item) {
       item.video.status = "error";
     },
     showErrorMessage(message) {
