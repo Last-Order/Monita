@@ -3,9 +3,7 @@
 import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol,
-  installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
-const path = require('path');
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -63,7 +61,7 @@ app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
-      await installVueDevtools()
+      // await installVueDevtools()
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
